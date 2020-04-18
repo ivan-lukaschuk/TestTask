@@ -1,0 +1,17 @@
+.details.slds-modal__container {
+    max-width: 50rem !important;
+    width: 50% !important;
+}
+
+.cart.slds-modal__container {
+    max-width: 55rem !important;
+    width: 100% !important;
+}
+
+lightning-formatted-text {
+    word-wrap: break-word;
+}
+
+lightning-formatted-url {
+    word-wrap: break-word;
+}

@@ -1,0 +1,173 @@
+<template>
+    <div class="slds-box slds-m-around_x-small">
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col slds-size_2-of-3 slds-align--absolute-center">
+                <lightning-formatted-text class="slds-text-heading_small" value="Name:"></lightning-formatted-text>
+                <lightning-formatted-text class="slds-m-left--xx-small slds-m-right--large"
+                                          value={accountName}></lightning-formatted-text>
+                <lightning-formatted-text class="slds-text-heading_small" value="Number:"></lightning-formatted-text>
+                <lightning-formatted-text class="slds-m-left--xx-small"
+                                          value={accountNumber}></lightning-formatted-text>
+            </div>
+            <div class="slds-col slds-size_1-of-3">
+                <lightning-button variant="brand-outline" label="Create Product" class="slds-m-left--large"
+                                  onclick={createProduct} disabled={isCreateProductDisabled}></lightning-button>
+                <lightning-button variant="brand-outline" label="Cart" onclick={showHideCart}
+                                  class="slds-m-left--small"></lightning-button>
+            </div>
+        </div>
+    </div>
+
+    <div class="slds-grid slds-gutters slds-m-around_x-small">
+        <div class="slds-box slds-col slds-size_1-of-3">
+            <div class="slds-text-align_center">
+                <lightning-formatted-text class="slds-text-heading_small slds-m-bottom--medium"
+                                          value="Filter"></lightning-formatted-text>
+            </div>
+
+            <div class="slds-m-around--large">
+                <lightning-formatted-text class="slds-text-heading_small"
+                                          value="Family:"></lightning-formatted-text>
+                <template for:each={familyPicklistValues} for:item="item">
+                    <div key={item.id}>
+                        <lightning-input type="checkbox" label={item.label}
+                                         onchange={handleChangeFamily}></lightning-input>
+                    </div>
+                </template>
+            </div>
+
+            <div class="slds-m-around--large">
+                <lightning-formatted-text class="slds-text-heading_small"
+                                          value="Type:"></lightning-formatted-text>
+                <template for:each={typePicklistValues} for:item="item">
+                    <div key={item.id}>
+                        <lightning-input type="checkbox" label={item.label}
+                                         onchange={handleChangeType}></lightning-input>
+                    </div>
+                </template>
+            </div>
+
+            <lightning-button variant="brand-outline" label="Show products" class="slds-align_absolute-center"
+                              onclick={getProductsByFilter}></lightning-button>
+        </div>
+        <div class="slds-col slds-size_2-of-3">
+            <lightning-input type="search" label="" placeholder="Search..." onchange={handleKeyChange}
+                             value={searchKey}></lightning-input>
+
+            <div class="slds-m-around--x-small slds-grid slds-wrap">
+                <template for:each={products} for:item="product">
+                    <div key={product.id} class="slds-box slds-col slds-size-- slds-m-around_small"
+                         style="width: 170px">
+                        <div class="slds-text-align_center slds-text-heading_small slds-m-bottom--medium">
+                            {product.name}
+                        </div>
+                        <div class="slds-text-align_center slds-truncate">{product.description}</div>
+                        <div class="slds-grid slds-gutters slds-m-top--large">
+                            <div class="slds-col slds-size_1-of-2">
+                                <button class="slds-button slds-button_outline-brand slds-button_stretch"
+                                        value={product.id} onclick={showHideDetails}>Details
+                                </button>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                                <button class="slds-button slds-button_outline-brand slds-button_stretch"
+                                        value={product.id} onclick={addToCart}>Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+
+    <template if:true={areDetailsVisible}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small"
+                 aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+            <div class="details slds-modal__container">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Details</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <lightning-formatted-text class="slds-text-heading_small" value="Name:"></lightning-formatted-text>
+                    <lightning-formatted-text class="slds-m-left--xx-small slds-m-right--large"
+                                              value={productDetails.name}></lightning-formatted-text>
+                    <br/>
+                    <lightning-formatted-text class="slds-text-heading_small"
+                                              value="Description:"></lightning-formatted-text>
+                    <lightning-formatted-text class="slds-m-left--xx-small slds-m-right--large"
+                                              value={productDetails.description}></lightning-formatted-text>
+                    <br/>
+                    <lightning-formatted-text class="slds-text-heading_small" value="Type:"></lightning-formatted-text>
+                    <lightning-formatted-text class="slds-m-left--xx-small slds-m-right--large"
+                                              value={productDetails.type}></lightning-formatted-text>
+                    <br/>
+                    <lightning-formatted-text class="slds-text-heading_small"
+                                              value="Family:"></lightning-formatted-text>
+                    <lightning-formatted-text class="slds-m-left--xx-small slds-m-right--large"
+                                              value={productDetails.family}></lightning-formatted-text>
+                    <br/>
+                    <lightning-formatted-text class="slds-text-heading_small" value="Image:"></lightning-formatted-text>
+                    <lightning-formatted-url class="slds-m-left--xx-small slds-m-right--large"
+                                             value={productDetails.image}></lightning-formatted-url>
+                    <br/>
+                    <lightning-formatted-text class="slds-text-heading_small" value="Price:"></lightning-formatted-text>
+                    <lightning-formatted-number class="slds-m-left--xx-small slds-m-right--large"
+                                                format-style="currency"
+                                                value={productDetails.price}></lightning-formatted-number>
+                </div>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_brand" onclick={showHideDetails}>Cancel</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <template if:true={isCartVisible}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small"
+                 aria-labelledby="modal-heading-02" aria-modal="true" aria-describedby="modal-content-id-2">
+            <div class="cart slds-modal__container">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-02" class="slds-modal__title slds-hyphenate">Cart</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
+                    <lightning-datatable
+                            key-field="id"
+                            data={data}
+                            show-row-number-column
+                            hide-checkbox-column
+                            columns={columns}>
+                    </lightning-datatable>
+                </div>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" disabled={isCheckoutDisabled}
+                            onclick={checkoutCart}>Checkout
+                    </button>
+                    <button class="slds-button slds-button_brand" onclick={showHideCart}>Cancel</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <template if:true={isCreateProductVisible}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small"
+                 aria-labelledby="modal-heading-03" aria-modal="true" aria-describedby="modal-content-id-2">
+            <div class="cart slds-modal__container">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-03" class="slds-modal__title slds-hyphenate">Create Product</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-3">
+                    <lightning-record-form
+                            object-api-name="Product__c"
+                            fields={fields}>
+                    </lightning-record-form>
+                </div>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_brand" onclick={hideProductCreationWindow}>Cancel</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

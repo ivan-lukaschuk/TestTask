@@ -1,0 +1,4 @@
+<aura:component description="OrderManagementWindow" implements="force:lightningQuickAction, force:hasRecordId">
+    <ltng:require styles="{!$Resource.ModalWindowWidth}" />
+    <c:orderManagement recordId="{!v.recordId}"/>
+</aura:component>
